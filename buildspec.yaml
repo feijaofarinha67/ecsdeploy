@@ -1,0 +1,37 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_DEFAULT_REGION: us-east-1
+    IMAGE_REPO_NAME: eks/test1
+    #IMAGE_TAG: v2.0
+    #FUNCTION_NAME: testelambda2
+
+phases:
+  pre_build:
+    commands:
+      - echo Login no ECR...
+      - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      - REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - IMAGE_TAG=$(date +%Y%m%d%H%M%S)
+      - echo "IMAGE_TAG=$IMAGE_TAG"
+
+  build:
+    commands:
+      - echo Build da imagem...
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG -f demoapp/app/Dockerfile
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
+      # - printf '[{"name":"app1","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
+      # - cat imagedefinitions.json
+
+  post_build:
+    commands:
+      - echo Push para ECR...
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Atualizando Imagem de Container...
+
+artifacts:
+  files:
+    - '**/*'
+    - imagedefinitions.json
