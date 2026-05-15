@@ -22,14 +22,14 @@ phases:
       - echo Build da imagem...
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG -f demoapps/app1/Dockerfile demoapps/app1
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
-      # - printf '[{"name":"app1","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
-      # - cat imagedefinitions.json
-
+      
   post_build:
     commands:
       - echo Push para ECR...
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Atualizando Imagem de Container...
+      - printf '[{"name":"app1","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - cat imagedefinitions.json
 
 artifacts:
   files:
