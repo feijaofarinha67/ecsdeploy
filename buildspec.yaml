@@ -20,7 +20,7 @@ phases:
   build:
     commands:
       - echo Build da imagem...
-      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG -f demoapp/app/Dockerfile
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG -f demoapp/app1/Dockerfile
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
       # - printf '[{"name":"app1","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
       # - cat imagedefinitions.json
